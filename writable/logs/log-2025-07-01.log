@@ -1,0 +1,18 @@
+CRITICAL - 2025-07-01 20:15:07 --> Error: Class "App\Models\RefeicoesModel" not found
+[Method: GET, Route: /]
+in APPPATH\Controllers\PublicoController.php on line 20.
+ 1 SYSTEMPATH\CodeIgniter.php(903): App\Controllers\PublicoController->__construct()
+ 2 SYSTEMPATH\CodeIgniter.php(498): CodeIgniter\CodeIgniter->createController()
+ 3 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-07-01 20:15:43 --> Error: Class "App\Models\RefeicoesModel" not found
+[Method: GET, Route: /]
+in APPPATH\Controllers\PublicoController.php on line 20.
+ 1 SYSTEMPATH\CodeIgniter.php(903): App\Controllers\PublicoController->__construct()
+ 2 SYSTEMPATH\CodeIgniter.php(498): CodeIgniter\CodeIgniter->createController()
+ 3 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
