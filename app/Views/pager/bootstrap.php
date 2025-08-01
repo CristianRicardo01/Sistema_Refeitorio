@@ -1,16 +1,12 @@
-<?php if ($pager->hasPages()): ?>
+<?php if ($pager->getPageCount() > 1): ?>
     <nav>
         <ul class="pagination">
-            <?php if ($pager->hasPrevious()) : ?>
+            <?php if ($pager->hasPrevious()): ?>
                 <li class="page-item">
-                    <a class="page-link" href="<?= $pager->getFirst() ?>" aria-label="Primeira">
-                        <<
-                            </a>
+                    <a class="page-link" href="<?= $pager->getFirst() ?>" aria-label="Primeira">&laquo;&laquo;</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="<?= $pager->getPrevious() ?>" aria-label="Anterior">
-                        <
-                            </a>
+                    <a class="page-link" href="<?= $pager->getPrevious() ?>" aria-label="Anterior">&laquo;</a>
                 </li>
             <?php endif ?>
 
@@ -22,16 +18,12 @@
                 </li>
             <?php endforeach ?>
 
-            <?php if ($pager->hasNext()) : ?>
+            <?php if ($pager->hasNext()): ?>
                 <li class="page-item">
-                    <a class="page-link" href="<?= $pager->getNext() ?>" aria-label="Próxima">
-                        >
-                    </a>
+                    <a class="page-link" href="<?= $pager->getNext() ?>" aria-label="Próxima">&raquo;</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="<?= $pager->getLast() ?>" aria-label="Última">
-                        >>
-                    </a>
+                    <a class="page-link" href="<?= $pager->getLast() ?>" aria-label="Última">&raquo;&raquo;</a>
                 </li>
             <?php endif ?>
         </ul>

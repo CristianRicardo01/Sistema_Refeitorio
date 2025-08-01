@@ -19,7 +19,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body text-center">
-                        <h2 class="mb-4 text-center">Registro de Refeição</h2>
+                        <h2 class="mb-4 text-center">Solicitação de Marmita</h2>
                         <p class="mb-0" id="tituloPeriodo"></p>
                         <p class="mb-0" id="dataAtual"></p>
                         <form id="formRefeicao">
@@ -28,6 +28,17 @@
                                 <label for="matricula" class="form-label">Matrícula / CPF</label>
                                 <input type="text" class="form-control" id="matricula" name="matricula" required />
                             </div>
+
+                            <div class="input-group input-group-outline my-3 is-focused">
+                                <label for="setor_id" class="form-label">Setor</label>
+                                <select class="form-control" id="setor_id" name="setor_id" required>
+                                    <option value="">Selecione um setor</option>
+                                    <?php foreach ($setores as $setor): ?>
+                                        <option value="<?= $setor['id'] ?>"><?= esc($setor['nome']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
                             <button type="submit" id="btnSubmit" class="btn btn-primary w-100" disabled>Registrar</button>
                         </form>
                         <div id="alertMsg" class="mt-3"></div>
@@ -51,31 +62,20 @@
         const tituloPeriodo = document.getElementById('tituloPeriodo');
         const dataAtual = document.getElementById('dataAtual');
         const matriculaInput = document.getElementById('matricula');
+        const setorSelect = document.getElementById('setor_id');
 
         // Config do backend
         const periodos = [{
-                nome: "Café da Manhã",
-                tipo: "cafe_manha",
-                inicio: '<?= getConfig("hora_inicio_cafe_manha") ?>',
-                fim: '<?= getConfig("hora_final_cafe_manha") ?>'
-            },
-            {
                 nome: "Almoço",
-                tipo: "almoço",
+                tipo: "marmita_almoco",
                 inicio: '<?= getConfig("hora_inicio_almoco") ?>',
                 fim: '<?= getConfig("hora_fim_almoco") ?>'
             },
             {
                 nome: "Janta",
-                tipo: "janta",
+                tipo: "marmita_janta",
                 inicio: '<?= getConfig("hora_inicio_janta") ?>',
                 fim: '<?= getConfig("hora_fim_janta") ?>'
-            },
-            {
-                nome: "Café da Madrugada",
-                tipo: "cafe_madrugada",
-                inicio: '<?= getConfig("hora_inicio_cafe_madrugada") ?>',
-                fim: '<?= getConfig("hora_final_cafe_madrugada") ?>'
             }
         ];
 
@@ -91,11 +91,12 @@
                 const ini = parseTimeToMinutes(periodo.inicio);
                 const fim = parseTimeToMinutes(periodo.fim);
                 if (minutos >= ini && minutos <= fim) {
-                    return periodo;
+                    return periodo; // retorna objeto com nome e tipo
                 }
             }
             return null;
         }
+
 
         function atualizarInfo() {
             const periodo = getPeriodoAtual();
@@ -103,6 +104,7 @@
             dataAtual.textContent = `Data: ${new Date().toLocaleDateString('pt-BR')}`;
             btnSubmit.disabled = !periodo;
         }
+
 
         function mostrarMensagem(msg, tipo) {
             alertMsg.textContent = msg;
@@ -118,15 +120,15 @@
             if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
             let soma = 0,
                 resto;
-            for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i - 1]) * (11 - i);
+            for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
             resto = (soma * 10) % 11;
             if (resto === 10 || resto === 11) resto = 0;
-            if (resto !== parseInt(cpf[9])) return false;
+            if (resto !== parseInt(cpf.substring(9, 10))) return false;
             soma = 0;
-            for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i - 1]) * (12 - i);
+            for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
             resto = (soma * 10) % 11;
             if (resto === 10 || resto === 11) resto = 0;
-            return resto === parseInt(cpf[10]);
+            return resto === parseInt(cpf.substring(10, 11));
         }
 
         matriculaInput.addEventListener('input', e => {
@@ -142,9 +144,16 @@
                 mostrarMensagem("Fora do horário permitido para registro.", "secondary");
                 return;
             }
-            const tipo = periodo.tipo;
+            const tipo = periodo.tipo; // "marmita_almoco" ou "marmita_janta"
 
             const matricula = matriculaInput.value.trim();
+            const setorId = setorSelect.value;
+
+            if (!setorId) {
+                mostrarMensagem("Por favor, selecione um setor.", "danger");
+                return;
+            }
+
             if (!matricula) {
                 mostrarMensagem("Por favor, insira sua matrícula.", "danger");
                 return;
@@ -172,13 +181,13 @@
             btnSubmit.disabled = true;
             btnSubmit.textContent = "Registrando...";
 
-            fetch('<?= site_url('registrar') ?>', {
+            fetch('<?= site_url('registrar-marmita') ?>', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: `matricula=${encodeURIComponent(matricula)}&tipo=${encodeURIComponent(tipo)}&${encodeURIComponent(csrfName)}=${encodeURIComponent(csrfValue)}`
+                    body: `matricula=${encodeURIComponent(matricula)}&setor_id=${encodeURIComponent(setorId)}&tipo=${encodeURIComponent(tipo)}&${encodeURIComponent(csrfName)}=${encodeURIComponent(csrfValue)}`
                 })
                 .then(res => res.json())
                 .then(data => {
@@ -202,7 +211,6 @@
         atualizarInfo();
         setInterval(atualizarInfo, 60000);
     </script>
-
 
     <script src="<?php echo base_url('assets/js/material-dashboard.min.js') ?>"></script>
 </body>

@@ -1,4 +1,4 @@
-<?= $this->extend('Layouts/admin') ?>
+<?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('title') ?>Configuração de Horários<?= $this->endSection() ?>
 

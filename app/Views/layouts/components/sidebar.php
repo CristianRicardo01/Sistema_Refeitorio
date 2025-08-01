@@ -16,15 +16,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?php echo strpos(current_url(), base_url('admin/relatorio')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/relatorio') ?>">
+                <a class="nav-link <?php echo strpos(current_url(), base_url('admin/solicitacao')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/solicitacao') ?>">
                     <i class="material-symbols-rounded opacity-5">table_view</i>
-                    <span class="nav-link-text ms-1">Relatório</span>
+                    <span class="nav-link-text ms-1">Solicitação</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?php echo strpos(current_url(), base_url('admin/lancamentos')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/lancamentos') ?>">
+                <a class="nav-link <?php echo strpos(current_url(), base_url('admin/relatorio')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/relatorio') ?>">
                     <i class="material-symbols-rounded opacity-5">receipt_long</i>
-                    <span class="nav-link-text ms-1">Lançamentos</span>
+                    <span class="nav-link-text ms-1">Relatorio</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -37,6 +37,12 @@
                 <a class="nav-link <?php echo strpos(current_url(), base_url('admin/cardapio')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/cardapio') ?>">
                     <i class="material-symbols-rounded opacity-5">view_timeline</i>
                     <span class="nav-link-text ms-1">Cardapio</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo strpos(current_url(), base_url('admin/colaborador')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/colaborador') ?>">
+                    <i class="material-symbols-rounded opacity-5">groups</i>
+                    <span class="nav-link-text ms-1">Colaborador</span>
                 </a>
             </li>
             <li class="nav-item mt-3">

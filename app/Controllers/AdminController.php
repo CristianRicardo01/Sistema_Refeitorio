@@ -160,7 +160,8 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Senha alterada com sucesso!');
     }
-    public function relatorio()
+
+    public function solicitacao()
     {
         $data_inicio = $this->request->getGet('data_inicio');
         $data_fim = $this->request->getGet('data_fim');
@@ -168,9 +169,10 @@ class AdminController extends Controller
 
         $perPage = 10;
         $builder = $this->db->table('lancamentos rf')
-            ->select('f.nome, f.matricula, r.tipo, rf.data, rf.created_at')
+            ->select('f.nome, f.matricula, r.tipo, rf.data, rf.created_at, s.nome as setor_nome')
             ->join('funcionarios f', 'f.id = rf.funcionario_id')
-            ->join('refeicoes r', 'r.id = rf.refeicao_id');
+            ->join('refeicoes r', 'r.id = rf.refeicao_id')
+            ->join('setores s', 's.id = rf.setor_id', 'left');  // <-- Aqui o join correto para setor
 
         if ($data_inicio) $builder->where('rf.data >=', $data_inicio);
         if ($data_fim) $builder->where('rf.data <=', $data_fim);
@@ -187,7 +189,7 @@ class AdminController extends Controller
         $pager = \Config\Services::pager();
         $pager->makeLinks($page, $perPage, $total);
 
-        return view('admin/relatorio', [
+        return view('admin/solicitacao', [
             'registros' => $registros,
             'data_inicio' => $data_inicio,
             'data_fim' => $data_fim,
@@ -196,40 +198,57 @@ class AdminController extends Controller
         ]);
     }
 
-    public function lancamentos()
+
+    public function relatorio()
     {
         $data_inicio = $this->request->getGet('data_inicio');
-        $data_fim = $this->request->getGet('data_fim');
-        $tipo = $this->request->getGet('tipo');
-        $matricula = $this->request->getGet('matricula');
+        $data_fim    = $this->request->getGet('data_fim');
+        $tipo        = $this->request->getGet('tipo');
+        $matricula   = $this->request->getGet('matricula');
+        $setor       = $this->request->getGet('setor');
 
         $perPage = 10;
-        $page = (int)($this->request->getGet('page') ?? 1);
-        $offset = ($page - 1) * $perPage;
+        $page    = (int)($this->request->getGet('page') ?? 1);
+        $offset  = ($page - 1) * $perPage;
 
         $builder = $this->db->table('lancamentos l')
-            ->select('f.nome, f.matricula, r.tipo, l.data, l.created_at')
+            ->select('f.nome, f.matricula, r.tipo, l.data, l.created_at, s.nome as setor')
             ->join('funcionarios f', 'f.id = l.funcionario_id')
-            ->join('refeicoes r', 'r.id = l.refeicao_id');
+            ->join('refeicoes r', 'r.id = l.refeicao_id')
+            ->join('setores s', 's.id = l.setor_id', 'left'); // <-- Correto!
+
 
         if ($data_inicio) $builder->where('l.data >=', $data_inicio);
-        if ($data_fim) $builder->where('l.data <=', $data_fim);
-        if ($tipo) $builder->where('r.tipo', $tipo);
-        if ($matricula) $builder->where('f.matricula', $matricula);
+        if ($data_fim)    $builder->where('l.data <=', $data_fim);
+        if ($tipo)        $builder->where('r.tipo', $tipo);
+        if ($matricula)   $builder->where('f.matricula', $matricula);
+        if ($setor)       $builder->where('s.nome', $setor);
 
-        $total = $builder->countAllResults(false);
-        $registros = $builder->limit($perPage, $offset)->orderBy('l.data', 'desc')->get()->getResultArray();
+        $countBuilder = clone $builder;
+        $total = $countBuilder->countAllResults(false);
+
+        $dataBuilder = clone $builder;
+        $registros = $dataBuilder->limit($perPage, $offset)->orderBy('l.data', 'desc')->get()->getResultArray();
+
+        // Buscar lista de setores (únicos)
+        $setorBuilder = $this->db->table('setores')
+            ->select('nome')
+            ->where('ativo', 1)
+            ->orderBy('nome');
+        $setores = array_column($setorBuilder->get()->getResultArray(), 'nome');
 
         $pager = \Config\Services::pager();
         $pager->makeLinks($page, $perPage, $total);
 
-        return view('admin/lancamentos', [
-            'registros' => $registros,
-            'data_inicio' => $data_inicio,
-            'data_fim' => $data_fim,
-            'tipo' => $tipo,
-            'matricula' => $matricula,
-            'pager' => $pager
+        return view('admin/relatorio', [
+            'registros'    => $registros,
+            'data_inicio'  => $data_inicio,
+            'data_fim'     => $data_fim,
+            'tipo'         => $tipo,
+            'matricula'    => $matricula,
+            'pager'        => $pager,
+            'setor'        => $setor,
+            'setores'      => $setores,
         ]);
     }
 
@@ -237,43 +256,46 @@ class AdminController extends Controller
     {
         $data_inicio = $this->request->getGet('data_inicio');
         $data_fim = $this->request->getGet('data_fim');
-        $tipo = $this->request->getGet('tipo');
+        $tipo = trim($this->request->getGet('tipo') ?? '');
         $matricula = $this->request->getGet('matricula');
 
         $builder = $this->db->table('lancamentos l')
-            ->select('f.nome, f.matricula, r.tipo, l.data, l.created_at')
+            ->select('f.nome, f.matricula, r.tipo, l.data, l.created_at, s.nome as setor')
             ->join('funcionarios f', 'f.id = l.funcionario_id')
-            ->join('refeicoes r', 'r.id = l.refeicao_id');
+            ->join('refeicoes r', 'r.id = l.refeicao_id')
+            ->join('setores s', 's.id = l.setor_id', 'left'); // <-- Correto!
 
         if ($data_inicio) $builder->where('l.data >=', $data_inicio);
         if ($data_fim) $builder->where('l.data <=', $data_fim);
-        if ($tipo) $builder->where('r.tipo', $tipo);
+        if ($tipo !== '') $builder->where('r.tipo', $tipo);
         if ($matricula) $builder->where('f.matricula', $matricula);
 
         $registros = $builder->orderBy('l.data', 'desc')->get()->getResultArray();
 
-        $dompdf = new Dompdf();
+        $dompdf = new \Dompdf\Dompdf();
         $html = view('admin/pdf_template', ['registros' => $registros]);
         $dompdf->loadHtml($html);
         $dompdf->render();
         $dompdf->stream('relatorio.pdf');
     }
 
+
     public function exportarCsv()
     {
         $data_inicio = $this->request->getGet('data_inicio');
         $data_fim = $this->request->getGet('data_fim');
-        $tipo = $this->request->getGet('tipo');
+        $tipo = trim($this->request->getGet('tipo') ?? '');
         $matricula = $this->request->getGet('matricula');
 
         $builder = $this->db->table('lancamentos l')
-            ->select('f.nome, f.matricula, r.tipo, l.data, l.created_at')
+            ->select('f.nome, f.matricula, s.nome as setor, r.tipo, l.data, l.created_at')
             ->join('funcionarios f', 'f.id = l.funcionario_id')
-            ->join('refeicoes r', 'r.id = l.refeicao_id');
+            ->join('refeicoes r', 'r.id = l.refeicao_id')
+            ->join('setores s', 's.id = l.setor_id', 'left'); // <-- CORRIGIDO AQUI
 
         if ($data_inicio) $builder->where('l.data >=', $data_inicio);
         if ($data_fim) $builder->where('l.data <=', $data_fim);
-        if ($tipo) $builder->where('r.tipo', $tipo);
+        if ($tipo !== '') $builder->where('r.tipo', $tipo);
         if ($matricula) $builder->where('f.matricula', $matricula);
 
         $registros = $builder->orderBy('l.data', 'desc')->get()->getResultArray();
@@ -282,13 +304,22 @@ class AdminController extends Controller
         header('Content-Disposition: attachment; filename="relatorio.csv"');
 
         $f = fopen('php://output', 'w');
-        fputcsv($f, ['Nome', 'Matrícula', 'Tipo', 'Data', 'Registrado em']);
+        fputcsv($f, ['Nome', 'Matrícula', 'Setor', 'Tipo', 'Data', 'Registrado em']);
         foreach ($registros as $r) {
-            fputcsv($f, [$r['nome'], $r['matricula'], $r['tipo'], $r['data'], $r['created_at']]);
+            fputcsv($f, [
+                $r['nome'],
+                $r['matricula'],
+                $r['setor'] ?? 'N/A',
+                $r['tipo'],
+                $r['data'],
+                $r['created_at']
+            ]);
         }
         fclose($f);
         exit;
     }
+
+
 
     public function toggleStatus()
     {
@@ -313,5 +344,138 @@ class AdminController extends Controller
         ]);
 
         return $this->response->setJSON(['success' => 'Status atualizado com sucesso.', 'novo_status' => $novoStatus]);
+    }
+
+    public function colaborador()
+    {
+        $funcionarioModel = new \App\Models\FuncionarioModel();
+        $refeicoesModel = new \App\Models\RefeicoesModel();
+
+        $perPage = 10;
+
+        // Paginar com caminho correto
+        $funcionarios = $funcionarioModel->paginate($perPage, 'default');
+        $pager = $funcionarioModel->pager;
+        $pager->setPath('admin/colaborador'); // ajusta a URL base da paginação
+
+        $refeicoes = $refeicoesModel->findAll(); // Dados para o modal de refeição
+
+        return view('admin/colaborador/index', [
+            'funcionarios' => $funcionarios,
+            'refeicoes' => $refeicoes,
+            'pager' => $pager
+        ]);
+    }
+
+    public function updateColaborador()
+    {
+        $id = $this->request->getPost('id');
+        $nome = $this->request->getPost('nome');
+        $matricula = $this->request->getPost('matricula');
+
+        if (!$id || !$nome || !$matricula) {
+            return redirect()->back()->with('error', 'Dados incompletos.');
+        }
+
+        $funcionarioModel = new \App\Models\FuncionarioModel();
+
+        if (!$funcionarioModel->find($id)) {
+            return redirect()->back()->with('error', 'Funcionário não encontrado.');
+        }
+
+        $funcionarioModel->update($id, [
+            'nome' => $nome,
+            'matricula' => $matricula,
+        ]);
+
+        return redirect()->back()->with('success', 'Funcionário atualizado com sucesso.');
+    }
+
+    public function registrarRefeicao()
+    {
+        $matricula = $this->request->getPost('matricula');
+        $refeicao_id = $this->request->getPost('refeicao_id');
+
+        if (!$matricula || !$refeicao_id) {
+            return redirect()->back()->with('error', 'Preencha todos os campos.');
+        }
+
+        $funcionarioModel = new \App\Models\FuncionarioModel();
+        $refeicoesModel = new \App\Models\RefeicoesModel();
+
+        $funcionario = $funcionarioModel->where('matricula', $matricula)->first();
+        $refeicao = $refeicoesModel->find($refeicao_id);
+
+        if (!$funcionario) {
+            return redirect()->back()->with('error', 'Funcionário não encontrado.');
+        }
+
+        if (!$refeicao) {
+            return redirect()->back()->with('error', 'Tipo de refeição inválido.');
+        }
+
+        $this->db->table('lancamentos')->insert([
+            'funcionario_id' => $funcionario['id'],
+            'refeicao_id'    => $refeicao_id,
+            'data'           => date('Y-m-d'),
+            'created_at'     => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect()->back()->with('success', 'Refeição registrada com sucesso!');
+    }
+
+    public function registrarRefeicaoMarmita()
+    {
+        $matricula  = $this->request->getPost('matricula');
+        $refeicaoId = $this->request->getPost('refeicao_id');
+        $setorId    = $this->request->getPost('setor_id');
+
+        if (!$matricula || !$refeicaoId || !$setorId) {
+            return redirect()->back()->with('error', 'Preencha todos os campos.');
+        }
+
+        $funcionarioModel = new \App\Models\FuncionarioModel();
+        $refeicoesModel   = new \App\Models\RefeicoesModel();
+        $setoresModel     = new \App\Models\SetoresModel();
+
+        $funcionario = $funcionarioModel->where('matricula', $matricula)->first();
+        $refeicao    = $refeicoesModel->find($refeicaoId);
+        $setor       = $setoresModel->find($setorId);
+
+        if (!$funcionario) {
+            return redirect()->back()->with('error', 'Funcionário não encontrado.');
+        }
+
+        if (!$refeicao) {
+            return redirect()->back()->with('error', 'Tipo de refeição inválido.');
+        }
+
+        if (!$setor || $setor['ativo'] != 1) {
+            return redirect()->back()->with('error', 'Setor inválido ou inativo.');
+        }
+
+        // Verifica duplicidade
+        $db = \Config\Database::connect();
+        $builder = $db->table('lancamentos');
+        $registroExistente = $builder
+            ->where('funcionario_id', $funcionario['id'])
+            ->where('refeicao_id', $refeicaoId)
+            ->where('data', date('Y-m-d'))
+            ->get()
+            ->getRow();
+
+        if ($registroExistente) {
+            return redirect()->back()->with('error', 'Funcionário já registrou esta refeição hoje.');
+        }
+
+        $builder->insert([
+            'funcionario_id' => $funcionario['id'],
+            'refeicao_id'    => $refeicaoId,
+            'setor_id'       => $setorId,
+            'data'           => date('Y-m-d'),
+            'created_at'     => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect()->back()->with('success', 'Marmita registrada com sucesso!');
     }
 }

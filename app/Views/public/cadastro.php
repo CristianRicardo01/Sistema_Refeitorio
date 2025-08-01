@@ -45,13 +45,11 @@
                             </div>
 
                             <div class="input-group input-group-outline mb-3">
-                                <label class="form-label">Matrícula</label>
+                                <label class="form-label">Matrícula / CPF</label>
                                 <input id="input_number"
                                     type="text"
                                     class="form-control"
                                     name="matricula"
-                                    pattern="(\d{5}|\d{11})"
-                                    title="Digite 5 dígitos para matrícula ou 11 para CPF"
                                     oninput="validateNumber(this)"
                                     required>
                             </div>

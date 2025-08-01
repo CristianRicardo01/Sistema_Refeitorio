@@ -1,4 +1,4 @@
-<?= $this->extend('Layouts/admin') ?>
+<?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('title') ?>
 Editar <?= ucfirst($cardapio['dia_semana']) ?> - Janta

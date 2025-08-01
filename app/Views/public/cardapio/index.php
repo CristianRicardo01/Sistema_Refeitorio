@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Cardápio Semanal - Hospital de Amor</title>
     <?= $this->include('layouts/components/icons') ?>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo base_url('assets/css/bootstrap.min.css')?>" rel="stylesheet">
     <style>
         body {
             background-color: #fff3d9;

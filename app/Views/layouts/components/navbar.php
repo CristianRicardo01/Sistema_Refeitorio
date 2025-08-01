@@ -18,8 +18,9 @@ $third_last = $segments[$count - 3] ?? null;
 // Tabela de nomes amigáveis
 $base_names = [
     'dashboard'    => 'Dashboard',
-    'relatorio'    => 'Relatório',
-    'lancamentos'  => 'Lançamentos',
+    'solicitacao'  => 'Solicitação',
+    'relatorio'    => 'Relatório', // remover no fim 
+    // 'lancamentos'  => 'Lançamentos',
     'config'       => 'Configuração',
     'cardapio'     => 'Cardápio',
     'profile'      => 'Perfil',

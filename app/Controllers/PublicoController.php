@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\FuncionarioModel;
 use App\Models\RefeicaoModel;
 use App\Models\RefeicoesModel;
+use App\Models\SetoresModel;
 use CodeIgniter\Controller;
 
 class PublicoController extends Controller
@@ -12,6 +13,7 @@ class PublicoController extends Controller
     protected $funcionarioModel;
     protected $refeicaoModel;
     protected $refeicoesModel;
+    protected $setoresModel;  // nova
 
     public function __construct()
     {
@@ -19,6 +21,7 @@ class PublicoController extends Controller
         $this->funcionarioModel = new FuncionarioModel();
         $this->refeicaoModel = new RefeicaoModel();
         $this->refeicoesModel = new RefeicoesModel();
+        $this->setoresModel = new SetoresModel(); // nova
     }
 
     public function index()
@@ -118,8 +121,9 @@ class PublicoController extends Controller
         return view('public/cadastro');
     }
 
-    public function cadastrar() {
-        
+    public function cadastrar()
+    {
+
         $nome = trim($this->request->getPost('nome'));
         $matricula = trim($this->request->getPost('matricula'));
 
@@ -133,7 +137,7 @@ class PublicoController extends Controller
         }
 
         // Validação matrícula ou CPF
-        if (strlen($matricula) === 5) {
+        if (strlen($matricula) === 4 || strlen($matricula) === 5) {
             if ($matricula[0] === '0') {
                 return redirect()->back()->withInput()->with('error', 'A matrícula não pode começar com 0.');
             }
@@ -143,7 +147,7 @@ class PublicoController extends Controller
                 return redirect()->back()->withInput()->with('error', 'CPF inválido.');
             }
         } else {
-            return redirect()->back()->withInput()->with('error', 'Digite uma matrícula com 5 dígitos ou um CPF com 11 dígitos.');
+            return redirect()->back()->withInput()->with('error', 'Digite uma matrícula com 4 ou 5 dígitos ou um CPF com 11 dígitos.');
         }
 
         // Verifica duplicidade
@@ -195,5 +199,61 @@ class PublicoController extends Controller
         }
 
         return true;
+    }
+
+    // Mostrar formulário para solicitar marmita
+    public function marmita()
+    {
+        $setorModel = new SetoresModel();
+        $data['setores'] = $setorModel->where('ativo', 1)->findAll();
+        return view('public/marmita', $data);
+    }
+
+    public function registrarMarmita()
+    {
+        $matricula = $this->request->getPost('matricula');
+        $setorId   = $this->request->getPost('setor_id');
+        $tipo      = $this->request->getPost('tipo'); // <- pegando o tipo do POST
+        $dataHoje  = date('Y-m-d');
+
+        $funcModel = model('FuncionarioModel');
+
+        $funcionario = $funcModel->where('matricula', $matricula)->first();
+        if (!$funcionario) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Funcionário não encontrado.'
+            ]);
+        }
+
+        $refeicao = $this->refeicoesModel->where('tipo', $tipo)->first(); // <- usa o tipo vindo do frontend
+        if (!$refeicao) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Tipo de refeição não configurado.'
+            ]);
+        }
+
+        $setor = model('SetoresModel')->find($setorId);
+        if (!$setor) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Setor inválido.'
+            ]);
+        }
+
+        if ($this->refeicaoModel->existe($funcionario['id'], $refeicao['id'], $dataHoje)) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Solicitação de Marmita já registrada.'
+            ]);
+        }
+
+        $this->refeicaoModel->inserir($funcionario['id'], $refeicao['id'], $dataHoje, $setorId);
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => 'Solicitação de Marmita registrada com sucesso.'
+        ]);
     }
 }

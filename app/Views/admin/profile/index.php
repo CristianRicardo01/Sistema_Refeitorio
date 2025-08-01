@@ -1,4 +1,4 @@
-<?= $this->extend('Layouts/admin') ?>
+<?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('title') ?>Painel do Admin<?= $this->endSection() ?>
 
