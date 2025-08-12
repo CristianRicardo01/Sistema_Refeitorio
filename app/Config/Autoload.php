@@ -88,5 +88,5 @@ class Autoload extends AutoloadConfig
      *
      * @var list<string>
      */
-    public $helpers = [];
+    public $helpers = ['url', 'form', 'meu','helpers']; // Adicione 'meu' aqui se quiser carregar o helper globalmente
 }

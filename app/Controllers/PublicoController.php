@@ -118,7 +118,32 @@ class PublicoController extends Controller
 
     public function cadastro()
     {
-        return view('public/cadastro');
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+        if (stripos($userAgent, 'iPhone') !== false || stripos($userAgent, 'iPad') !== false) {
+            return redirect()->to(base_url('cadastro/ios/'));
+        }
+
+        if (stripos($userAgent, 'Android') !== false) {
+            return redirect()->to(base_url('cadastro/android/'));
+        }
+
+        return redirect()->to(base_url('cadastro/desktop/'));
+    }
+
+    public function cadastroAndroid()
+    {
+        return view('public/cadastro/android/index');
+    }
+
+    public function cadastroIos()
+    {
+        return view('public/cadastro/ios/index');
+    }
+
+    public function cadastroDesktop()
+    {
+        return view('public/cadastro/desktop/index');
     }
 
     public function cadastrar()

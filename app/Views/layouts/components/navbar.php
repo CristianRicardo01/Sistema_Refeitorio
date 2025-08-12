@@ -17,14 +17,15 @@ $third_last = $segments[$count - 3] ?? null;
 
 // Tabela de nomes amigáveis
 $base_names = [
-    'dashboard'    => 'Dashboard',
-    'solicitacao'  => 'Solicitação',
-    'relatorio'    => 'Relatório', // remover no fim 
-    // 'lancamentos'  => 'Lançamentos',
-    'config'       => 'Configuração',
-    'cardapio'     => 'Cardápio',
-    'profile'      => 'Perfil',
-    'users'        => 'Usuários',
+    'dashboard'                 => 'Dashboard',
+    'solicitacao'               => 'Solicitação',
+    'relatorio'                 => 'Relatório', // remover no fim 
+    // 'lancamentos'            => 'Lançamentos',
+    'config'                    => 'Configuração',
+    'cardapio'                  => 'Cardápio',
+    'profile'                   => 'Perfil',
+    'users'                     => 'Usuários',
+    'importar-funcionarios'     => 'Importar Funcionarios',
 ];
 
 $actions = [
@@ -78,7 +79,16 @@ if (is_numeric($last)) {
                 <div class="input-group input-group-outline"></div>
             </div>
             <ul class="navbar-nav d-flex align-items-center  justify-content-end">
-                <li class="nav-item d-flex align-items-center">
+                <li class="nav-item d-xl-none px-3 d-flex align-items-center">
+                    <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                        <div class="sidenav-toggler-inner">
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                        </div>
+                    </a>
+                </li>
+                <li class="nav-item d-flex  align-items-center">
                     <a href="<?= base_url(session('user_role') . '/admin/profile/' . session('user_id')) ?>" class="nav-link text-body font-weight-bold px-0">
                         <i class="material-symbols-rounded">account_circle</i>
                     </a>

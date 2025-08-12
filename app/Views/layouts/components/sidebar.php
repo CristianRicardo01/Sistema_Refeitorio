@@ -27,27 +27,39 @@
                     <span class="nav-link-text ms-1">Relatorio</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link <?php echo strpos(current_url(), base_url('admin/config')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/config') ?>">
-                    <i class="material-symbols-rounded opacity-5">settings</i>
-                    <span class="nav-link-text ms-1">Configuração</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link <?php echo strpos(current_url(), base_url('admin/cardapio')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/cardapio') ?>">
-                    <i class="material-symbols-rounded opacity-5">view_timeline</i>
-                    <span class="nav-link-text ms-1">Cardapio</span>
-                </a>
-            </li>
+
             <li class="nav-item">
                 <a class="nav-link <?php echo strpos(current_url(), base_url('admin/colaborador')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/colaborador') ?>">
                     <i class="material-symbols-rounded opacity-5">groups</i>
                     <span class="nav-link-text ms-1">Colaborador</span>
                 </a>
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link <?php echo strpos(current_url(), base_url('admin/cardapio')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/cardapio') ?>">
+                    <i class="material-symbols-rounded opacity-5">view_timeline</i>
+                    <span class="nav-link-text ms-1">Cardapio</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link <?php echo strpos(current_url(), base_url('admin/config')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('admin/config') ?>">
+                    <i class="material-symbols-rounded opacity-5">settings</i>
+                    <span class="nav-link-text ms-1">Configuração</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link <?php echo strpos(current_url(), base_url('csv/importar-funcionarios')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?php echo base_url('csv/importar-funcionarios') ?>">
+                    <i class="material-symbols-rounded opacity-5">receipt_long</i>
+                    <span class="nav-link-text ms-1">Importar CSV</span>
+                </a>
+            </li>
+
             <li class="nav-item mt-3">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Account pages</h6>
             </li>
+
             <li class="nav-item">
                 <a class="nav-link <?php echo strpos(current_url(), base_url('admin/profile')) === 0 ? 'active bg-gradient-dark text-white' : 'text-dark'; ?> " href="<?= base_url(session('user_role') . '/admin/profile/' . session('user_id')) ?>">
                     <i class="material-symbols-rounded opacity-5">person</i>

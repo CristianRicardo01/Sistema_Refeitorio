@@ -15,7 +15,7 @@
     <!-- Material Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <!-- CSS Files -->
-    <link id="pagestyle" href="<?php echo base_url('') ?>assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
+    <link id="pagestyle" href="<?php echo base_url('') ?>assets/css/material-dashboard.min.css" rel="stylesheet" />
     <!-- Quill CSS -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <?= $this->renderSection('css') ?>
@@ -46,6 +46,7 @@
     <script src="<?php echo base_url('') ?>assets/js/plugins/perfect-scrollbar.min.js"></script>
     <script src="<?php echo base_url('') ?>assets/js/plugins/smooth-scrollbar.min.js"></script>
     <script src="<?php echo base_url('') ?>assets/js/plugins/chartjs.min.js"></script>
+
     <script>
         var ctx = document.getElementById("chart-bars").getContext("2d");
 

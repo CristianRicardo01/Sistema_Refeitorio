@@ -7,7 +7,15 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'PublicoController::index');
 
+// $routes->get('/cadastro', 'PublicoController::cadastro');
+
 $routes->get('/cadastro', 'PublicoController::cadastro');
+
+$routes->get('/cadastro/android', 'PublicoController::cadastroAndroid');
+$routes->get('/cadastro/ios', 'PublicoController::cadastroIos');
+$routes->get('/cadastro/desktop', 'PublicoController::cadastroDesktop');
+
+
 $routes->post('/cadastrar', 'PublicoController::cadastrar');
 $routes->post('/registrar', 'PublicoController::registrar');
 
@@ -45,6 +53,8 @@ $routes->group('admin', ['filter' => 'roleauth'], function ($routes) {
 
     $routes->get('config', 'ConfigController::index');
     $routes->post('config/update', 'ConfigController::update');
+    $routes->post('config/addSetor', 'ConfigController::addSetor');
+    $routes->get('config/toggleSetor/(:num)', 'ConfigController::toggleSetor/$1');
 
     $routes->get('exportar/csv', 'AdminController::exportarCsv');
     $routes->get('exportar/pdf', 'AdminController::exportarPdf');
@@ -55,4 +65,9 @@ $routes->group('admin', ['filter' => 'roleauth'], function ($routes) {
 
     $routes->get('cardapio/edit_janta/(:num)', 'Cardapio::editJanta/$1');
     $routes->post('cardapio/update_janta/(:num)', 'Cardapio::updateJanta/$1');
+});
+
+$routes->group('csv', ['filter' => 'roleauth'], function ($routes) {
+    $routes->get('importar-funcionarios', 'FuncionarioImportController::index');
+    $routes->post('importar-funcionarios/upload', 'FuncionarioImportController::upload');
 });
